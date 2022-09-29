@@ -25,17 +25,20 @@ public class Repository {
                             Park park = new Park();
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
                             park.setId(jsonObject.getString("id"));
-                            park.setName(jsonObject.getString("fullName"));
+                            park.setFullName(jsonObject.getString("fullName"));
+                            park.setLatitude(jsonObject.getString("latitude"));
+                            park.setLongitude(jsonObject.getString("longitude"));
 
                             parkList.add(park);
                         }
+                        if(callback != null){ callback.processPark(parkList);}
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }, error -> {
                     error.printStackTrace();
                 });
-        if(callback != null){ callback.processPark(parkList);}
         AppController.getInstance().addToRequestQueue(jsonObjectRequest);
     }
 }
