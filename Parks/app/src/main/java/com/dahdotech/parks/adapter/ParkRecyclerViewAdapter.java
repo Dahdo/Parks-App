@@ -1,6 +1,5 @@
 package com.dahdotech.parks.adapter;
 
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +13,12 @@ import com.dahdotech.parks.R;
 import com.dahdotech.parks.model.Park;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class ParkRecyclerViewAdapter extends RecyclerView.Adapter<ParkRecyclerViewAdapter.ViewHolder> {
     private final List<Park> parkList;
 
-    public RecyclerViewAdapter(List<Park> parkList) {
+    public ParkRecyclerViewAdapter(List<Park> parkList) {
         this.parkList = parkList;
     }
 

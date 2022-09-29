@@ -70,15 +70,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         Repository.getParks(parks -> {
+            LatLng sydney = new LatLng(-34, 151);
             for(Park park : parks){
 
-                LatLng sydney = new LatLng(Double.parseDouble(park.getLatitude()),
+                sydney = new LatLng(Double.parseDouble(park.getLatitude()),
                         Double.parseDouble(park.getLongitude()));
                 mMap.addMarker(new MarkerOptions().position(sydney).title(park.getFullName()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-                Log.d(TAG, "onMapReady: " + park.getName());
             }
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 5));
         });
     }
 }
