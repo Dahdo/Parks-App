@@ -35,6 +35,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.Imag
                 .load(imagesList.get(position).getUrl())
                 .fit()
                 .placeholder(android.R.drawable.stat_notify_error)
+                .placeholder(android.R.drawable.stat_sys_download)
                 .into(holder.imageView);
     }
 

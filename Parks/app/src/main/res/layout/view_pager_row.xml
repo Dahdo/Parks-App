@@ -2,11 +2,12 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_margin="10dp"
-    android:elevation="5dp"
-    app:cardCornerRadius="12dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="#8A8080"
+    android:elevation="5dp"
+    app:cardCornerRadius="12dp">
 
     <ImageView
         android:id="@+id/view_pager_image"

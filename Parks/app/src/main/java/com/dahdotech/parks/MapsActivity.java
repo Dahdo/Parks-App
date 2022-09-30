@@ -1,18 +1,24 @@
 package com.dahdotech.parks;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.dahdotech.parks.adapter.CustomInfoWindow;
 import com.dahdotech.parks.data.AsyncResponse;
 import com.dahdotech.parks.data.Repository;
 import com.dahdotech.parks.model.Park;
 import com.dahdotech.parks.model.ParkViewModel;
+import com.dahdotech.parks.util.Util;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,7 +43,10 @@ GoogleMap.OnInfoWindowClickListener{
     private ActivityMapsBinding binding;
     private ParkViewModel parkViewModel;
     private List<Park> parkList;
-
+    private CardView cardView;
+    private EditText stateCodeEditText;
+    private ImageButton searchButton;
+    private String code = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +62,10 @@ GoogleMap.OnInfoWindowClickListener{
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        cardView = findViewById(R.id.card_view);
+        stateCodeEditText = findViewById(R.id.floating_state_value_edit_text);
+        searchButton = findViewById(R.id.floating_search_button);
+
         BottomNavigationView bottomNavigationView =
                 findViewById(R.id.button_navigation);
 
@@ -60,6 +73,11 @@ GoogleMap.OnInfoWindowClickListener{
 
             int id = item.getItemId();
             if(id == R.id.maps_nav_button) {
+                if(cardView.getVisibility() == View.INVISIBLE ||
+                cardView.getVisibility() == View.GONE){
+                    cardView.setVisibility(View.VISIBLE);
+                }
+                parkList.clear();
                 mMap.clear();
                 mapFragment.getMapAsync(this);
                 getSupportFragmentManager().beginTransaction()
@@ -68,6 +86,7 @@ GoogleMap.OnInfoWindowClickListener{
                 return true;
             }
             else if(id == R.id.parks_nav_button){
+                cardView.setVisibility(View.GONE);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.map, ParksFragment.newInstance())
                         .commit();
@@ -75,6 +94,18 @@ GoogleMap.OnInfoWindowClickListener{
             }
 
             return false;
+        });
+
+        searchButton.setOnClickListener(view -> {
+            parkList.clear();
+            Util.hideSoftKeyboard(view);
+            String stateCode = stateCodeEditText.getText().toString().trim();
+            if(!TextUtils.isEmpty(stateCode)){
+                code = stateCode;
+                parkViewModel.selectCode(code);
+                onMapReady(mMap); //refresh map
+                stateCodeEditText.setText("");
+            }
         });
     }
 
@@ -86,7 +117,11 @@ GoogleMap.OnInfoWindowClickListener{
         mMap.setOnInfoWindowClickListener(this);
 
         parkList.clear();
+        populateMap();
+    }
 
+    private void populateMap() {
+        mMap.clear(); // important! clears the map.
         Repository.getParks(parks -> {
             parkList = parks;
             LatLng location = new LatLng(-34, 151);
@@ -107,11 +142,12 @@ GoogleMap.OnInfoWindowClickListener{
             }
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 5));
             parkViewModel.setSelectedParks(parkList);
-        });
+        }, code);
     }
 
     @Override
     public void onInfoWindowClick(@NonNull Marker marker) {
+        cardView.setVisibility(View.GONE);
         //go to detailsFragment
         goToDetailsFragment(marker);
     }

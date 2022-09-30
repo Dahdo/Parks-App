@@ -22,9 +22,10 @@ import java.util.List;
 public class Repository {
     static List<Park> parkList = new ArrayList<>();
 
-    public static void getParks(final AsyncResponse callback){
+    public static void getParks(final AsyncResponse callback, String stateCode){
+        String url = Util.getParksUrl(stateCode);
         JsonObjectRequest jsonObjectRequest =
-                new JsonObjectRequest(Request.Method.GET, Util.PARKS_URL, null, response -> {
+                new JsonObjectRequest(Request.Method.GET, url, null, response -> {
                     try {
                         JSONArray jsonArray = response.getJSONArray("data");
                         for (int i = 0; i < jsonArray.length(); i++) {

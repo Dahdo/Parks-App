@@ -8,4 +8,5 @@
     <string name="operating_hours">operating hours</string>
     <string name="info_unavailable">Info not available</string>
     <string name="no_directions">Info not available</string>
+    <string name="hint_search">Enter state code: WA, OR, NY, ...</string>
 </resources>
