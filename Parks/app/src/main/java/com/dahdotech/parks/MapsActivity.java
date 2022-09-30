@@ -1,5 +1,6 @@
 package com.dahdotech.parks;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.dahdotech.parks.adapter.CustomInfoWindow;
 import com.dahdotech.parks.data.AsyncResponse;
 import com.dahdotech.parks.data.Repository;
 import com.dahdotech.parks.model.Park;
@@ -15,7 +17,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.dahdotech.parks.databinding.ActivityMapsBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -23,7 +28,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+GoogleMap.OnInfoWindowClickListener{
 
 
     private static final String  TAG = "testing";
@@ -76,6 +82,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setInfoWindowAdapter(new CustomInfoWindow(getApplicationContext()));
+        mMap.setOnInfoWindowClickListener(this);
+
         parkList.clear();
 
         Repository.getParks(parks -> {
@@ -85,10 +94,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 location = new LatLng(Double.parseDouble(park.getLatitude()),
                         Double.parseDouble(park.getLongitude()));
-                mMap.addMarker(new MarkerOptions().position(location).title(park.getFullName()));
+
+                MarkerOptions markerOptions =
+                        new MarkerOptions().position(location)
+                                        .title(park.getFullName())
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+                                        .snippet(park.getStates());
+
+                Marker marker = mMap.addMarker(markerOptions);
+                marker.setTag(park);
+
             }
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 5));
             parkViewModel.setSelectedParks(parkList);
         });
+    }
+
+    @Override
+    public void onInfoWindowClick(@NonNull Marker marker) {
+        //go to detailsFragment
+        goToDetailsFragment(marker);
+    }
+
+    private void goToDetailsFragment(@NonNull Marker marker) {
+        parkViewModel.setSelectedPark((Park) marker.getTag());
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.map, DetailsFragment.newInstance())
+                .commit();
     }
 }
