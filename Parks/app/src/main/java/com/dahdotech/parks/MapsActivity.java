@@ -80,14 +80,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Repository.getParks(parks -> {
             parkList = parks;
-            LatLng sydney = new LatLng(-34, 151);
+            LatLng location = new LatLng(-34, 151);
             for(Park park : parks){
 
-                sydney = new LatLng(Double.parseDouble(park.getLatitude()),
+                location = new LatLng(Double.parseDouble(park.getLatitude()),
                         Double.parseDouble(park.getLongitude()));
-                mMap.addMarker(new MarkerOptions().position(sydney).title(park.getFullName()));
+                mMap.addMarker(new MarkerOptions().position(location).title(park.getFullName()));
             }
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 5));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 5));
             parkViewModel.setSelectedParks(parkList);
         });
     }
